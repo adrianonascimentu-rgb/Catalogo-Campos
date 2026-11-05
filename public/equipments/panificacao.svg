@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="inox" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#CBD5E1"/>
+      <stop offset="45%" stop-color="#F8FAFC"/>
+      <stop offset="70%" stop-color="#94A3B8"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <line x1="80" y1="500" x2="720" y2="500" stroke="#94A3B8" stroke-width="3"/>
+  <!-- Base & Feet -->
+  <rect x="230" y="475" width="40" height="25" rx="4" fill="#1E293B"/>
+  <rect x="510" y="475" width="40" height="25" rx="4" fill="#1E293B"/>
+  <!-- Main L-Frame Body -->
+  <path d="M210 475 L560 475 L560 150 L370 150 L370 230 L210 230 Z" fill="url(#body)" stroke="#475569" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Top Head Cover -->
+  <path d="M220 150 L560 150 L560 215 L220 215 C200 215 200 150 220 150 Z" fill="#E2E8F0" stroke="#334155" stroke-width="4"/>
+  <!-- Stainless Steel Bowl (Cuba Inox) -->
+  <rect x="195" y="255" width="230" height="175" rx="18" fill="url(#inox)" stroke="#475569" stroke-width="4"/>
+  <ellipse cx="310" cy="255" rx="115" ry="18" fill="#E2E8F0" stroke="#475569" stroke-width="4"/>
+  <!-- NR12 Safety Grid -->
+  <path d="M205 245 C205 200 415 200 415 245" fill="none" stroke="#64748B" stroke-width="3" stroke-dasharray="8 6"/>
+  <!-- Spiral Hook -->
+  <path d="M310 215 L310 310 C285 330 335 350 310 380" fill="none" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+  <!-- Control Panel NR12 -->
+  <rect x="455" y="220" width="75" height="130" rx="8" fill="#1E293B" stroke="#0F172A" stroke-width="3"/>
+  <circle cx="492" cy="255" r="14" fill="#EF4444" stroke="#FCA5A5" stroke-width="3"/>
+  <circle cx="477" cy="295" r="8" fill="#22C55E"/>
+  <circle cx="507" cy="295" r="8" fill="#F59E0B"/>
+  <rect x="470" y="318" width="45" height="16" rx="3" fill="#38BDF8"/>
+  <!-- Brand / Technical Tag -->
+  <text x="400" y="75" font-family="sans-serif" font-size="18" font-weight="700" fill="#0F172A" text-anchor="middle" letter-spacing="2">PANIFICAÇÃO &amp; MASSAS PROFISSIONAL</text>
+  <text x="400" y="102" font-family="monospace" font-size="14" fill="#475569" text-anchor="middle">CUBA EM AÇO INOX 304 · PROTEÇÃO NR12 · MOTOR ALTO TORQUE</text>
+</svg>

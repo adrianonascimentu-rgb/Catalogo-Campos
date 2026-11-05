@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FAF8F5"/>
+      <stop offset="100%" stop-color="#E7E5E4"/>
+    </linearGradient>
+    <linearGradient id="vitrineGlass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#F8FAFC" stop-opacity="0.35"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <line x1="60" y1="505" x2="740" y2="505" stroke="#78716C" stroke-width="3"/>
+  <!-- Vitrine Base -->
+  <rect x="110" y="370" width="580" height="125" rx="6" fill="#1C1917" stroke="#0C0A09" stroke-width="4"/>
+  <rect x="135" y="395" width="530" height="75" rx="4" fill="#292524" stroke="#44403C" stroke-width="2"/>
+  <!-- Glass Display Upper Structure -->
+  <polygon points="110,370 155,165 645,165 690,370" fill="url(#vitrineGlass)" stroke="#334155" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Internal Stainless Shelves -->
+  <line x1="145" y1="235" x2="655" y2="235" stroke="#64748B" stroke-width="5"/>
+  <line x1="130" y1="305" x2="670" y2="305" stroke="#64748B" stroke-width="5"/>
+  <!-- LED Light Bars -->
+  <line x1="160" y1="175" x2="640" y2="175" stroke="#FEF08A" stroke-width="4"/>
+  <!-- Feet -->
+  <rect x="140" y="495" width="28" height="10" fill="#44403C"/>
+  <rect x="632" y="495" width="28" height="10" fill="#44403C"/>
+  <text x="400" y="75" font-family="sans-serif" font-size="18" font-weight="700" fill="#1C1917" text-anchor="middle" letter-spacing="2">VITRINES EXPOSITORAS &amp; CONFEITARIA</text>
+  <text x="400" y="102" font-family="monospace" font-size="14" fill="#57534E" text-anchor="middle">VIDRO TEMPERADO · PRATELEIRAS INOX · ACABAMENTO PLATINUM</text>
+</svg>

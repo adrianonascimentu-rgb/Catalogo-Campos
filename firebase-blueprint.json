@@ -1,0 +1,636 @@
+{
+  "entities": {
+    "CompanySettings": {
+      "title": "CompanySettings",
+      "description": "Configurações globais do catálogo da empresa, incluindo a logomarca exibida no topo.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador do workspace da empresa",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "URL ou Data URL (base64 otimizado) da logomarca exibida no topo da página",
+          "maxLength": 350000,
+          "minLength": 1
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp da última atualização da logomarca"
+        }
+      },
+      "required": ["ownerId", "logoUrl", "updatedAt"]
+    },
+    "WorkspacePermissions": {
+      "title": "WorkspacePermissions",
+      "description": "Políticas de controle de acesso do que clientes podem ver e vendedores podem editar.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador do workspace da empresa",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "clientShowPrices": {
+          "type": "boolean",
+          "description": "Define se clientes visualizam os preços da tabela PB-10X no catálogo"
+        },
+        "clientShowProductCode": {
+          "type": "boolean",
+          "description": "Define se clientes visualizam o código interno do produto"
+        },
+        "clientShowManufacturerRef": {
+          "type": "boolean",
+          "description": "Define se clientes visualizam a referência do fabricante"
+        },
+        "clientShowDimensionsAndMaterial": {
+          "type": "boolean",
+          "description": "Define se clientes visualizam dimensões, especificações e fabricante"
+        },
+        "clientShowPhotosCount": {
+          "type": "boolean",
+          "description": "Define se clientes visualizam galeria de múltiplas fotos e contador"
+        },
+        "clientHideOutOfStock": {
+          "type": "boolean",
+          "description": "Define se equipamentos sem estoque são ocultados para clientes"
+        },
+        "clientShowWhatsappButton": {
+          "type": "boolean",
+          "description": "Define se clientes visualizam botões de negociação no WhatsApp"
+        },
+        "clientRequireIdentification": {
+          "type": "boolean",
+          "description": "Define se o preenchimento de nome e telefone é obrigatório para abrir o catálogo"
+        },
+        "sellerCanEditProducts": {
+          "type": "boolean",
+          "description": "Define se vendedores podem editar dados cadastrais de produtos"
+        },
+        "sellerCanEditPrices": {
+          "type": "boolean",
+          "description": "Define se vendedores podem alterar o preço dos produtos"
+        },
+        "sellerCanCreateOrDeleteProducts": {
+          "type": "boolean",
+          "description": "Define se vendedores podem criar novos produtos ou excluir produtos"
+        },
+        "sellerCanManagePhotos": {
+          "type": "boolean",
+          "description": "Define se vendedores podem adicionar ou trocar fotos dos produtos"
+        },
+        "sellerCanManageSegments": {
+          "type": "boolean",
+          "description": "Define se vendedores podem criar, editar ou excluir segmentos de produtos"
+        },
+        "sellerCanManageSellers": {
+          "type": "boolean",
+          "description": "Define se vendedores podem cadastrar, inativar ou excluir vendedores"
+        },
+        "sellerCanDeleteLeads": {
+          "type": "boolean",
+          "description": "Define se vendedores podem excluir leads capturados"
+        },
+        "sellerCanViewPdfTable": {
+          "type": "boolean",
+          "description": "Define se vendedores podem abrir e baixar a tabela PDF completa"
+        },
+        "sellerCanChangeLogo": {
+          "type": "boolean",
+          "description": "Define se vendedores podem alterar a logomarca da empresa"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp da última atualização das permissões"
+        }
+      },
+      "required": [
+        "ownerId",
+        "clientShowPrices",
+        "clientShowProductCode",
+        "clientShowManufacturerRef",
+        "clientShowDimensionsAndMaterial",
+        "clientShowPhotosCount",
+        "clientHideOutOfStock",
+        "clientShowWhatsappButton",
+        "clientRequireIdentification",
+        "sellerCanEditProducts",
+        "sellerCanEditPrices",
+        "sellerCanCreateOrDeleteProducts",
+        "sellerCanManagePhotos",
+        "sellerCanManageSegments",
+        "sellerCanManageSellers",
+        "sellerCanDeleteLeads",
+        "sellerCanViewPdfTable",
+        "sellerCanChangeLogo",
+        "updatedAt"
+      ]
+    },
+    "Seller": {
+      "title": "Seller",
+      "description": "Vendedor autorizado a compartilhar links rastreáveis do catálogo com clientes.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador do workspace",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Nome completo do vendedor",
+          "maxLength": 80,
+          "minLength": 2
+        },
+        "roleTitle": {
+          "type": "string",
+          "description": "Cargo ou especialidade do vendedor",
+          "maxLength": 80,
+          "minLength": 2
+        },
+        "whatsapp": {
+          "type": "string",
+          "description": "Telefone ou WhatsApp de contato do vendedor",
+          "maxLength": 30,
+          "minLength": 8
+        },
+        "slug": {
+          "type": "string",
+          "description": "Identificador amigável para o link do vendedor",
+          "maxLength": 60,
+          "minLength": 2,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Indica se o vendedor está ativo"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp da última atualização"
+        }
+      },
+      "required": ["ownerId", "name", "roleTitle", "whatsapp", "slug", "active", "createdAt", "updatedAt"]
+    },
+    "Segment": {
+      "title": "Segment",
+      "description": "Segmento de produtos que pode ser transformado em um catálogo dedicado para clientes.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador do workspace",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Nome do segmento",
+          "maxLength": 60,
+          "minLength": 2
+        },
+        "slug": {
+          "type": "string",
+          "description": "Identificador amigável do segmento",
+          "maxLength": 60,
+          "minLength": 2,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "description": {
+          "type": "string",
+          "description": "Descrição comercial do segmento",
+          "maxLength": 300,
+          "minLength": 5
+        },
+        "coverImage": {
+          "type": "string",
+          "description": "Imagem de capa do segmento",
+          "maxLength": 350000,
+          "minLength": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp da última atualização"
+        }
+      },
+      "required": ["ownerId", "name", "slug", "description", "coverImage", "createdAt", "updatedAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Equipamento do catálogo com galeria de fotos e especificações técnicas.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador do workspace",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "sku": {
+          "type": "string",
+          "description": "Código do produto e referência do fabricante",
+          "maxLength": 40,
+          "minLength": 2
+        },
+        "name": {
+          "type": "string",
+          "description": "Nome comercial do produto",
+          "maxLength": 120,
+          "minLength": 2
+        },
+        "category": {
+          "type": "string",
+          "description": "Segmentos associados ao produto",
+          "maxLength": 300,
+          "minLength": 2
+        },
+        "price": {
+          "type": "number",
+          "description": "Preço unitário em reais (BRL)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Descrição detalhada do produto",
+          "maxLength": 1000,
+          "minLength": 5
+        },
+        "dimensions": {
+          "type": "string",
+          "description": "Dimensões físicas ou especificações do produto",
+          "maxLength": 120,
+          "minLength": 2
+        },
+        "material": {
+          "type": "string",
+          "description": "Fabricante e acabamento",
+          "maxLength": 120,
+          "minLength": 2
+        },
+        "primaryImage": {
+          "type": "string",
+          "description": "Caminho, URL ou Data URL da imagem principal",
+          "maxLength": 350000,
+          "minLength": 1
+        },
+        "galleryImages": {
+          "type": "array",
+          "description": "Lista limitada de até 6 fotos do equipamento"
+        },
+        "inStock": {
+          "type": "boolean",
+          "description": "Disponibilidade imediata em estoque"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de atualização"
+        }
+      },
+      "required": [
+        "ownerId",
+        "sku",
+        "name",
+        "category",
+        "price",
+        "description",
+        "dimensions",
+        "material",
+        "primaryImage",
+        "galleryImages",
+        "inStock",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Lead": {
+      "title": "Lead",
+      "description": "Cadastro de cliente capturado no catálogo contendo nome, telefone e o vendedor que enviou o link.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador do workspace",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "sellerId": {
+          "type": "string",
+          "description": "ID do vendedor que enviou o link do catálogo",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "sellerName": {
+          "type": "string",
+          "description": "Nome do vendedor associado ao link",
+          "maxLength": 80,
+          "minLength": 2
+        },
+        "clientName": {
+          "type": "string",
+          "description": "Nome informado pelo cliente",
+          "maxLength": 100,
+          "minLength": 2
+        },
+        "clientPhone": {
+          "type": "string",
+          "description": "Telefone/WhatsApp informado pelo cliente",
+          "maxLength": 30,
+          "minLength": 8
+        },
+        "status": {
+          "type": "string",
+          "description": "Estágio do atendimento do lead",
+          "enum": ["novo", "em_atendimento", "proposta", "convertido"]
+        },
+        "totalViews": {
+          "type": "number",
+          "description": "Total acumulado de visualizações de produtos por este cliente"
+        },
+        "lastViewedProductName": {
+          "type": "string",
+          "description": "Nome do último produto visualizado pelo cliente",
+          "maxLength": 120
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação do lead"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp da última interação do lead"
+        },
+        "clientUid": {
+          "type": "string",
+          "description": "UID do usuário autenticado (anônimo ou Google) que criou o lead",
+          "maxLength": 128,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "ownerId",
+        "sellerId",
+        "sellerName",
+        "clientName",
+        "clientPhone",
+        "status",
+        "totalViews",
+        "lastViewedProductName",
+        "createdAt",
+        "updatedAt",
+        "clientUid"
+      ]
+    },
+    "ProductView": {
+      "title": "ProductView",
+      "description": "Registro individual de produto visualizado por um lead específico.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador do workspace",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "leadId": {
+          "type": "string",
+          "description": "ID do lead pai",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "sellerId": {
+          "type": "string",
+          "description": "ID do vendedor que enviou o link",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "productId": {
+          "type": "string",
+          "description": "ID do produto visualizado",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "productName": {
+          "type": "string",
+          "description": "Nome do produto visualizado",
+          "maxLength": 120,
+          "minLength": 2
+        },
+        "productCategory": {
+          "type": "string",
+          "description": "Categoria do produto visualizado",
+          "maxLength": 300,
+          "minLength": 2
+        },
+        "productPrice": {
+          "type": "number",
+          "description": "Preço do produto no momento da visualização"
+        },
+        "productImage": {
+          "type": "string",
+          "description": "Imagem principal do produto visualizado",
+          "maxLength": 350000,
+          "minLength": 1
+        },
+        "viewCount": {
+          "type": "number",
+          "description": "Quantidade de vezes que o cliente abriu este produto"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Primeira visualização deste produto pelo lead"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Última visualização deste produto pelo lead"
+        }
+      },
+      "required": [
+        "ownerId",
+        "leadId",
+        "sellerId",
+        "productId",
+        "productName",
+        "productCategory",
+        "productPrice",
+        "productImage",
+        "viewCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StaffMember": {
+      "title": "StaffMember",
+      "description": "Membro da equipe (vendedor ou colaborador) autorizado por e-mail Google a entrar no painel interno com permissões granulares.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador do workspace da empresa",
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Nome do membro da equipe",
+          "maxLength": 80,
+          "minLength": 2
+        },
+        "roleLabel": {
+          "type": "string",
+          "description": "Cargo ou função do membro da equipe",
+          "maxLength": 80,
+          "minLength": 2
+        },
+        "role": {
+          "type": "string",
+          "description": "Papel na equipe (seller ou collaborator)",
+          "enum": ["seller", "collaborator"]
+        },
+        "sellerId": {
+          "type": "string",
+          "description": "ID do vendedor vinculado quando role='seller', senão vazio",
+          "maxLength": 128
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Indica se o acesso do membro da equipe está ativo"
+        },
+        "canManagePhotos": {
+          "type": "boolean",
+          "description": "Permissão para incluir e trocar fotos dos produtos"
+        },
+        "canEditProducts": {
+          "type": "boolean",
+          "description": "Permissão para adicionar e modificar descrição, nome e ficha técnica dos produtos"
+        },
+        "canCreateOrDeleteProducts": {
+          "type": "boolean",
+          "description": "Permissão para cadastrar novos produtos ou excluir itens"
+        },
+        "canManageSegments": {
+          "type": "boolean",
+          "description": "Permissão para criar segmentos e marcar produtos"
+        },
+        "canEditPrices": {
+          "type": "boolean",
+          "description": "Permissão para alterar preços da tabela PB-10X"
+        },
+        "canManageSellers": {
+          "type": "boolean",
+          "description": "Permissão para gerenciar vendedores"
+        },
+        "canDeleteLeads": {
+          "type": "boolean",
+          "description": "Permissão para excluir leads do CRM"
+        },
+        "canChangeLogo": {
+          "type": "boolean",
+          "description": "Permissão para alterar a logomarca da empresa"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação do membro da equipe"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp da última atualização do membro da equipe"
+        }
+      },
+      "required": [
+        "ownerId",
+        "name",
+        "roleLabel",
+        "role",
+        "sellerId",
+        "active",
+        "canManagePhotos",
+        "canEditProducts",
+        "canCreateOrDeleteProducts",
+        "canManageSegments",
+        "canEditPrices",
+        "canManageSellers",
+        "canDeleteLeads",
+        "canChangeLogo",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/CompanySettings" },
+      "description": "Configurações da empresa (logomarca no topo)."
+    },
+    "/permissions/{permissionId}": {
+      "schema": { "$ref": "#/entities/WorkspacePermissions" },
+      "description": "Permissões de visualização dos clientes e edição dos vendedores."
+    },
+    "/staff/{staffEmail}": {
+      "schema": { "$ref": "#/entities/StaffMember" },
+      "description": "Membros da equipe (vendedores e colaboradores) autorizados por e-mail Google em minúsculas."
+    },
+    "/sellers/{sellerId}": {
+      "schema": { "$ref": "#/entities/Seller" },
+      "description": "Coleção de vendedores com links rastreáveis para envio do catálogo."
+    },
+    "/segments/{segmentId}": {
+      "schema": { "$ref": "#/entities/Segment" },
+      "description": "Coleção de segmentos de produtos para catálogos segmentados."
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Coleção de equipamentos exibidos no catálogo interativo."
+    },
+    "/leads/{leadId}": {
+      "schema": { "$ref": "#/entities/Lead" },
+      "description": "Coleção de leads capturados com nome, telefone e vínculo ao vendedor."
+    },
+    "/leads/{leadId}/views/{viewId}": {
+      "schema": { "$ref": "#/entities/ProductView" },
+      "description": "Subcoleção de equipamentos visualizados por cada lead."
+    }
+  }
+}
+

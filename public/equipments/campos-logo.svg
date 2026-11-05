@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" width="640" height="160">
+  <!-- 6 Rounded Red Tiles for C A M P O S -->
+  <!-- Tile 1: C -->
+  <rect x="3" y="3" width="96" height="100" rx="18" fill="#D11718" />
+  <path
+    d="M 73.5 34.5 A 27.5 27.5 0 1 0 74.5 71.5"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="17.5"
+    stroke-linecap="round"
+  />
+
+  <!-- Tile 2: A -->
+  <rect x="111" y="3" width="96" height="100" rx="18" fill="#D11718" />
+  <path
+    d="M 134 80 L 159 24 L 184 80 L 160 80 L 155 68"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="16.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Tile 3: M -->
+  <rect x="219" y="3" width="96" height="100" rx="18" fill="#D11718" />
+  <path
+    d="M 239 80 L 239 24 L 267 74 L 295 24 L 295 80"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="16.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Tile 4: P -->
+  <rect x="327" y="3" width="96" height="100" rx="18" fill="#D11718" />
+  <path
+    d="M 353 80 L 353 24 L 379 24 A 16.5 16.5 0 0 1 379 57 L 353 57"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="16.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Tile 5: O -->
+  <rect x="435" y="3" width="96" height="100" rx="18" fill="#D11718" />
+  <ellipse
+    cx="483"
+    cy="53"
+    rx="26.5"
+    ry="27.5"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="17"
+  />
+
+  <!-- Tile 6: S -->
+  <rect x="541" y="3" width="96" height="100" rx="18" fill="#D11718" />
+  <path
+    d="M 609 33 C 605 22, 570 21, 570 37 C 570 54, 611 50, 611 69 C 611 85, 573 84, 568 71"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="16.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Bottom Subtitle: Equipamentos e Refrigeração -->
+  <text
+    x="320"
+    y="145"
+    font-family="'Plus Jakarta Sans', 'Myriad Pro', Arial, sans-serif"
+    font-size="44"
+    font-weight="500"
+    fill="#000000"
+    text-anchor="middle"
+    textLength="630"
+    lengthAdjust="spacingAndGlyphs"
+  >
+    Equipamentos e Refrigeração
+  </text>
+</svg>

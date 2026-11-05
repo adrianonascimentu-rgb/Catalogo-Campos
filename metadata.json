@@ -1,0 +1,6 @@
+{
+  "name": "Atelier Vitrine — Catálogo Interativo & Rastreamento de Leads",
+  "description": "Plataforma de catálogo digital para vendedores compartilharem links personalizados com clientes, capturarem leads (nome e telefone) e acompanharem em tempo real os produtos e fotos visualizados.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#F8FAFC"/>
+  <rect x="80" y="90" width="640" height="420" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3"/>
+  <rect x="120" y="135" width="170" height="140" rx="10" fill="#F1F5F9" stroke="#64748B" stroke-width="2"/>
+  <text x="205" y="195" font-family="monospace" font-size="22" font-weight="700" fill="#0F172A" text-anchor="middle">PB-10X</text>
+  <text x="205" y="225" font-family="sans-serif" font-size="13" fill="#475569" text-anchor="middle">CONDIÇÃO TABELA</text>
+  <rect x="315" y="135" width="170" height="140" rx="10" fill="#F1F5F9" stroke="#64748B" stroke-width="2"/>
+  <text x="400" y="195" font-family="monospace" font-size="22" font-weight="700" fill="#0F172A" text-anchor="middle">NR-12</text>
+  <text x="400" y="225" font-family="sans-serif" font-size="13" fill="#475569" text-anchor="middle">SEGURANÇA OPERACIONAL</text>
+  <rect x="510" y="135" width="170" height="140" rx="10" fill="#F1F5F9" stroke="#64748B" stroke-width="2"/>
+  <text x="595" y="195" font-family="monospace" font-size="22" font-weight="700" fill="#0F172A" text-anchor="middle">220V / BIV</text>
+  <text x="595" y="225" font-family="sans-serif" font-size="13" fill="#475569" text-anchor="middle">EFICIÊNCIA ENERGÉTICA</text>
+  <rect x="120" y="310" width="560" height="150" rx="10" fill="#0F172A"/>
+  <text x="400" y="365" font-family="sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">CAMPOS EQUIPAMENTOS E REFRIGERAÇÃO</text>
+  <text x="400" y="398" font-family="monospace" font-size="14" fill="#94A3B8" text-anchor="middle">PRODUTO ORIGINAL COM NOTA FISCAL E GARANTIA DE FÁBRICA</text>
+  <text x="400" y="425" font-family="monospace" font-size="13" fill="#38BDF8" text-anchor="middle">CONSULTE DISPONIBILIDADE IMEDIATA COM SEU VENDEDOR</text>
+</svg>

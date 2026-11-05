@@ -1,0 +1,462 @@
+rules_version = '2';
+
+// =====================================================================
+// REGRAS DE SEGURANCA - Atelier Vitrine / Campos Equipamentos
+//
+// Quem existe no sistema:
+//  - VISITANTE (cliente): entra de forma anonima (login anonimo do Firebase).
+//    Pode VER o catalogo, CRIAR o proprio lead e atualizar/apagar SO o dele.
+//  - ADMIN: conta Google com o e-mail abaixo. Pode tudo.
+//  - EQUIPE (vendedores e colaboradores): conta Google cujo e-mail foi
+//    cadastrado pelo admin em /staff/{email}. Permissoes conforme o cadastro.
+//
+// Ninguem consegue ler leads de outras pessoas. Nao existe mais senha
+// guardada no banco.
+// =====================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------
+    // 0. Trava geral: o que nao estiver liberado abaixo e NEGADO
+    // ---------------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ---------------------------------------------------------------
+    // 1. Identidade
+    // ---------------------------------------------------------------
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isGoogleUser() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email_verified == true;
+    }
+
+    // >>> TROQUE AQUI se o e-mail do administrador mudar <<<
+    function isAdmin() {
+      return isGoogleUser()
+        && request.auth.token.email == 'adrianonascimentu@gmail.com';
+    }
+
+    function staffPath() {
+      return /databases/$(database)/documents/staff/$(request.auth.token.email);
+    }
+
+    function isActiveStaff() {
+      return isGoogleUser()
+        && exists(staffPath())
+        && get(staffPath()).data.active == true;
+    }
+
+    function staffData() {
+      return get(staffPath()).data;
+    }
+
+    function isStaff() {
+      return isAdmin() || isActiveStaff();
+    }
+
+    function permsPath() {
+      return /databases/$(database)/documents/permissions/workspace_config;
+    }
+
+    // collabFlag = permissao do colaborador (no cadastro dele)
+    // sellerFlag = permissao geral dos vendedores (tela de permissoes)
+    function canDo(collabFlag, sellerFlag) {
+      return isAdmin()
+        || (isActiveStaff() && (
+             (staffData().role == 'collaborator' && staffData().get(collabFlag, false) == true)
+             || (staffData().role == 'seller'
+                 && exists(permsPath())
+                 && get(permsPath()).data.get(sellerFlag, false) == true)
+           ));
+    }
+
+    // ---------------------------------------------------------------
+    // 2. Utilitarios de validacao
+    // ---------------------------------------------------------------
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128
+        && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function str(v, minLen, maxLen) {
+      return v is string && v.size() >= minLen && v.size() <= maxLen;
+    }
+
+    function isWorkspace(v) {
+      return v is string && v == 'campos_workspace';
+    }
+
+    function changed() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // ---------------------------------------------------------------
+    // 3. Modelos de dados validos
+    // ---------------------------------------------------------------
+    function isValidSetting(d) {
+      return d.size() == 3
+        && d.keys().hasAll(['ownerId', 'logoUrl', 'updatedAt'])
+        && isWorkspace(d.ownerId)
+        && str(d.logoUrl, 1, 350000)
+        && d.updatedAt is timestamp;
+    }
+
+    // Documento de permissoes: SEM senha, SEM login. Pode ser lido por todos
+    // (contem apenas "liga/desliga" do que o cliente ve e o que vendedor faz).
+    function isValidPermissions(d) {
+      return d.size() == 19
+        && d.keys().hasAll([
+          'ownerId', 'clientShowPrices', 'clientShowProductCode',
+          'clientShowManufacturerRef', 'clientShowDimensionsAndMaterial',
+          'clientShowPhotosCount', 'clientHideOutOfStock',
+          'clientShowWhatsappButton', 'clientRequireIdentification',
+          'sellerCanEditProducts', 'sellerCanEditPrices',
+          'sellerCanCreateOrDeleteProducts', 'sellerCanManagePhotos',
+          'sellerCanManageSegments', 'sellerCanManageSellers',
+          'sellerCanDeleteLeads', 'sellerCanViewPdfTable',
+          'sellerCanChangeLogo', 'updatedAt'
+        ])
+        && isWorkspace(d.ownerId)
+        && d.clientShowPrices is bool
+        && d.clientShowProductCode is bool
+        && d.clientShowManufacturerRef is bool
+        && d.clientShowDimensionsAndMaterial is bool
+        && d.clientShowPhotosCount is bool
+        && d.clientHideOutOfStock is bool
+        && d.clientShowWhatsappButton is bool
+        && d.clientRequireIdentification is bool
+        && d.sellerCanEditProducts is bool
+        && d.sellerCanEditPrices is bool
+        && d.sellerCanCreateOrDeleteProducts is bool
+        && d.sellerCanManagePhotos is bool
+        && d.sellerCanManageSegments is bool
+        && d.sellerCanManageSellers is bool
+        && d.sellerCanDeleteLeads is bool
+        && d.sellerCanViewPdfTable is bool
+        && d.sellerCanChangeLogo is bool
+        && d.updatedAt is timestamp;
+    }
+
+    // Cadastro da equipe (id do documento = e-mail em minusculas)
+    function isValidStaff(d, email) {
+      return d.size() == 16
+        && d.keys().hasAll([
+          'ownerId', 'name', 'roleLabel', 'role', 'sellerId', 'active',
+          'canManagePhotos', 'canEditProducts', 'canCreateOrDeleteProducts',
+          'canManageSegments', 'canEditPrices', 'canManageSellers',
+          'canDeleteLeads', 'canChangeLogo', 'createdAt', 'updatedAt'
+        ])
+        && email is string && email.size() <= 120 && email == email.lower()
+        && email.matches('^[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,}$')
+        && isWorkspace(d.ownerId)
+        && str(d.name, 2, 80)
+        && str(d.roleLabel, 2, 80)
+        && d.role in ['seller', 'collaborator']
+        && str(d.sellerId, 0, 128)
+        && d.active is bool
+        && d.canManagePhotos is bool
+        && d.canEditProducts is bool
+        && d.canCreateOrDeleteProducts is bool
+        && d.canManageSegments is bool
+        && d.canEditPrices is bool
+        && d.canManageSellers is bool
+        && d.canDeleteLeads is bool
+        && d.canChangeLogo is bool
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp;
+    }
+
+    function isValidSeller(d) {
+      return d.size() == 8
+        && d.keys().hasAll(['ownerId', 'name', 'roleTitle', 'whatsapp', 'slug', 'active', 'createdAt', 'updatedAt'])
+        && isWorkspace(d.ownerId)
+        && str(d.name, 2, 80)
+        && str(d.roleTitle, 2, 80)
+        && str(d.whatsapp, 8, 30)
+        && str(d.slug, 2, 60) && d.slug.matches('^[a-zA-Z0-9_\\-]+$')
+        && d.active is bool
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp;
+    }
+
+    function isValidSegment(d) {
+      return d.size() == 7
+        && d.keys().hasAll(['ownerId', 'name', 'slug', 'description', 'coverImage', 'createdAt', 'updatedAt'])
+        && isWorkspace(d.ownerId)
+        && str(d.name, 2, 60)
+        && str(d.slug, 2, 60) && d.slug.matches('^[a-zA-Z0-9_\\-]+$')
+        && str(d.description, 5, 300)
+        && str(d.coverImage, 1, 350000)
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp;
+    }
+
+    function isValidProduct(d) {
+      return d.size() == 13
+        && d.keys().hasAll(['ownerId', 'sku', 'name', 'category', 'price', 'description', 'dimensions', 'material', 'primaryImage', 'galleryImages', 'inStock', 'createdAt', 'updatedAt'])
+        && isWorkspace(d.ownerId)
+        && str(d.sku, 2, 40)
+        && str(d.name, 2, 120)
+        && str(d.category, 2, 300)
+        && (d.price is int || d.price is float) && d.price >= 0 && d.price <= 10000000
+        && str(d.description, 5, 1000)
+        && str(d.dimensions, 2, 120)
+        && str(d.material, 2, 120)
+        && str(d.primaryImage, 1, 350000)
+        && d.galleryImages is list && d.galleryImages.size() >= 1 && d.galleryImages.size() <= 6
+        && str(d.galleryImages[0], 1, 350000)
+        && d.inStock is bool
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp;
+    }
+
+    // clientUid = identificador anonimo do visitante que criou o lead.
+    // Opcional so para aceitar leads antigos; novos leads SEMPRE tem.
+    function isValidLead(d) {
+      return d.keys().hasAll(['ownerId', 'sellerId', 'sellerName', 'clientName', 'clientPhone', 'status', 'totalViews', 'lastViewedProductName', 'createdAt', 'updatedAt'])
+        && (d.size() == 10 || (d.size() == 11 && 'clientUid' in d && str(d.clientUid, 1, 128)))
+        && isWorkspace(d.ownerId)
+        && isValidId(d.sellerId)
+        && str(d.sellerName, 2, 80)
+        && str(d.clientName, 2, 100)
+        && str(d.clientPhone, 8, 30)
+        && d.status in ['novo', 'em_atendimento', 'proposta', 'convertido']
+        && d.totalViews is int && d.totalViews >= 0 && d.totalViews <= 100000
+        && d.lastViewedProductName is string && d.lastViewedProductName.size() <= 120
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp;
+    }
+
+    function isValidProductView(d) {
+      return d.size() == 11
+        && d.keys().hasAll(['ownerId', 'leadId', 'sellerId', 'productId', 'productName', 'productCategory', 'productPrice', 'productImage', 'viewCount', 'createdAt', 'updatedAt'])
+        && isWorkspace(d.ownerId)
+        && isValidId(d.leadId)
+        && isValidId(d.sellerId)
+        && isValidId(d.productId)
+        && str(d.productName, 2, 120)
+        && str(d.productCategory, 2, 300)
+        && (d.productPrice is int || d.productPrice is float) && d.productPrice >= 0 && d.productPrice <= 10000000
+        && str(d.productImage, 1, 350000)
+        && d.viewCount is int && d.viewCount >= 1 && d.viewCount <= 100000
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp;
+    }
+
+    // ---------------------------------------------------------------
+    // 4. Dados de leads: quem pode ver o que
+    // ---------------------------------------------------------------
+    function leadDoc(leadId) {
+      return get(/databases/$(database)/documents/leads/$(leadId)).data;
+    }
+
+    // Visitante e o "dono" do lead que ele mesmo criou
+    function ownsLead(lead) {
+      return signedIn() && lead.get('clientUid', '') == request.auth.uid;
+    }
+
+    // Admin e colaboradores veem todos; vendedor ve so os leads dele
+    function staffSeesLead(lead) {
+      return isAdmin()
+        || (isActiveStaff() && (
+             staffData().role == 'collaborator'
+             || lead.sellerId == staffData().get('sellerId', '')
+           ));
+    }
+
+    // ---------------------------------------------------------------
+    // 5. Colecoes
+    // ---------------------------------------------------------------
+
+    // Logo da empresa: todos veem; so quem pode trocar logo altera
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create: if isValidId(settingId)
+        && canDo('canChangeLogo', 'sellerCanChangeLogo')
+        && isValidSetting(request.resource.data)
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isValidId(settingId)
+        && canDo('canChangeLogo', 'sellerCanChangeLogo')
+        && isValidSetting(request.resource.data)
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // Permissoes gerais: todos leem (so liga/desliga); SO o admin altera
+    match /permissions/{permissionId} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && permissionId == 'workspace_config'
+        && isValidPermissions(request.resource.data)
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // Equipe: SO o admin cadastra. Cada pessoa le apenas o proprio cadastro.
+    match /staff/{email} {
+      allow get: if isAdmin()
+        || (isGoogleUser() && request.auth.token.email == email);
+      allow list: if isAdmin();
+      allow create: if isAdmin()
+        && isValidStaff(request.resource.data, email)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isAdmin()
+        && isValidStaff(request.resource.data, email)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isAdmin();
+    }
+
+    // Vendedores (nome, cargo, WhatsApp, link): publico para leitura
+    match /sellers/{sellerId} {
+      allow read: if true;
+      allow create: if isValidId(sellerId)
+        && canDo('canManageSellers', 'sellerCanManageSellers')
+        && isValidSeller(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isValidId(sellerId)
+        && canDo('canManageSellers', 'sellerCanManageSellers')
+        && isValidSeller(request.resource.data)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if canDo('canManageSellers', 'sellerCanManageSellers');
+    }
+
+    // Segmentos
+    match /segments/{segmentId} {
+      allow read: if true;
+      allow create: if isValidId(segmentId)
+        && canDo('canManageSegments', 'sellerCanManageSegments')
+        && isValidSegment(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isValidId(segmentId)
+        && canDo('canManageSegments', 'sellerCanManageSegments')
+        && isValidSegment(request.resource.data)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if canDo('canManageSegments', 'sellerCanManageSegments');
+    }
+
+    // Produtos: todos veem; editar exige a permissao especifica
+    match /products/{productId} {
+      allow read: if true;
+
+      allow create: if isValidId(productId)
+        && canDo('canCreateOrDeleteProducts', 'sellerCanCreateOrDeleteProducts')
+        && isValidProduct(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isValidId(productId)
+        && isStaff()
+        && isValidProduct(request.resource.data)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time
+        && (!changed().hasAny(['price'])
+            || canDo('canEditPrices', 'sellerCanEditPrices'))
+        && (!changed().hasAny(['primaryImage', 'galleryImages'])
+            || canDo('canManagePhotos', 'sellerCanManagePhotos'))
+        && (!changed().hasAny(['sku', 'name', 'category', 'description', 'dimensions', 'material', 'inStock'])
+            || canDo('canEditProducts', 'sellerCanEditProducts'));
+
+      allow delete: if canDo('canCreateOrDeleteProducts', 'sellerCanCreateOrDeleteProducts');
+    }
+
+    // LEADS (dados pessoais de clientes: nome e telefone)
+    match /leads/{leadId} {
+      // Le: o proprio visitante que criou, ou a equipe autorizada.
+      // (As consultas do app precisam filtrar por clientUid ou sellerId.)
+      allow read: if ownsLead(resource.data) || staffSeesLead(resource.data);
+
+      // Cria: qualquer visitante logado (anonimo ou nao), SO em nome dele
+      allow create: if signedIn()
+        && isValidId(leadId)
+        && isValidLead(request.resource.data)
+        && 'clientUid' in request.resource.data
+        && request.resource.data.clientUid == request.auth.uid
+        && request.resource.data.status == 'novo'
+        && request.resource.data.totalViews <= 200
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && (
+          request.resource.data.sellerId == 'atendimento_geral'
+          || (
+            exists(/databases/$(database)/documents/sellers/$(request.resource.data.sellerId))
+            && get(/databases/$(database)/documents/sellers/$(request.resource.data.sellerId)).data.active == true
+          )
+        );
+
+      allow update: if isValidId(leadId)
+        && isValidLead(request.resource.data)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.sellerId == resource.data.sellerId
+        && request.resource.data.sellerName == resource.data.sellerName
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.get('clientUid', '') == resource.data.get('clientUid', '')
+        && request.resource.data.updatedAt == request.time
+        && (
+          // (a) o proprio visitante: contador de visitas (+1 por vez) e seus dados
+          (ownsLead(resource.data)
+            && resource.data.status != 'convertido'
+            && request.resource.data.status == resource.data.status
+            && request.resource.data.totalViews >= resource.data.totalViews
+            && request.resource.data.totalViews <= resource.data.totalViews + 1
+            && changed().hasOnly(['totalViews', 'lastViewedProductName', 'clientName', 'clientPhone', 'updatedAt']))
+          ||
+          // (b) a equipe: so muda o status do atendimento
+          (staffSeesLead(resource.data)
+            && changed().hasOnly(['status', 'updatedAt']))
+        );
+
+      // Apaga: o proprio visitante (direito LGPD) ou equipe com permissao
+      allow delete: if ownsLead(resource.data)
+        || (staffSeesLead(resource.data)
+            && canDo('canDeleteLeads', 'sellerCanDeleteLeads'));
+
+      // Produtos vistos por aquele lead
+      match /views/{viewId} {
+        allow read: if ownsLead(leadDoc(leadId)) || staffSeesLead(leadDoc(leadId));
+
+        allow create: if isValidId(leadId)
+          && isValidId(viewId)
+          && ownsLead(leadDoc(leadId))
+          && isValidProductView(request.resource.data)
+          && request.resource.data.leadId == leadId
+          && request.resource.data.sellerId == leadDoc(leadId).sellerId
+          && request.resource.data.viewCount == 1
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time
+          && exists(/databases/$(database)/documents/products/$(request.resource.data.productId));
+
+        allow update: if isValidId(leadId)
+          && isValidId(viewId)
+          && ownsLead(leadDoc(leadId))
+          && isValidProductView(request.resource.data)
+          && request.resource.data.ownerId == resource.data.ownerId
+          && request.resource.data.leadId == resource.data.leadId
+          && request.resource.data.sellerId == resource.data.sellerId
+          && request.resource.data.productId == resource.data.productId
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.updatedAt == request.time
+          && request.resource.data.viewCount >= resource.data.viewCount
+          && request.resource.data.viewCount <= resource.data.viewCount + 1
+          && changed().hasOnly(['viewCount', 'productName', 'productCategory', 'productPrice', 'productImage', 'updatedAt']);
+
+        allow delete: if ownsLead(leadDoc(leadId))
+          || (staffSeesLead(leadDoc(leadId))
+              && canDo('canDeleteLeads', 'sellerCanDeleteLeads'));
+      }
+    }
+  }
+}
